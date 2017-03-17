@@ -1,0 +1,19 @@
+---
+- name: Add the OS specific variables
+  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
+- name: Make cron jobs
+  cron:
+    name: "{{ item.key }}"
+    cron_file: "{{ item.value.file }}"
+    user: "{{ item.value.user }}"
+    minute: "{{ item.value.minute }}"
+    hour: "{{ item.value.hour }}"
+    day: "{{ item.value.day }}"
+    weekday: "{{ item.value.weekday }}"
+    month: "{{ item.value.month }}"
+    job: "{{ item.value.job }}"
+    state: "{{ item.value.state }}"
+  with_dict: "{{ hostvars[inventory_hostname]['cron_jobs'] }}"
+  notify:
+    - 'Enable cron'
+    - 'Restart cron'

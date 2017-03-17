@@ -1,0 +1,11 @@
+---
+- name: Enable cron
+  service:
+    name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
+    enabled: "yes"
+  when: "hostvars[inventory_hostname]['cron_jobs_enable'] == 'true'"
+- name: Restart cron
+  service:
+    name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
+    state: "restarted"
+  when: "hostvars[inventory_hostname]['cron_jobs_restart'] == 'true'"

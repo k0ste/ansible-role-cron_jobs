@@ -1,0 +1,3 @@
+---
+cron_jobs_enable: 'false'
+cron_jobs_restart: 'false'
