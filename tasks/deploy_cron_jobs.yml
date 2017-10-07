@@ -1,0 +1,19 @@
+---
+- name: cron_jobs | Deploy cron jobs
+  cron:
+    name: "{{ item.key }}"
+    cron_file: "{{ item.value.file }}"
+    user: "{{ item.value.user }}"
+    minute: "{{ item.value.minute }}"
+    hour: "{{ item.value.hour }}"
+    day: "{{ item.value.day }}"
+    weekday: "{{ item.value.weekday }}"
+    month: "{{ item.value.month }}"
+    job: "{{ item.value.job }}"
+    state: "{{ item.value.state }}"
+  with_dict: "{{ hostvars[inventory_hostname]['cron_jobs'] }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify:
+  - 'Enable cron'
+  - 'Restart cron'

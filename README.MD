@@ -1,21 +1,24 @@
 ansible-cron-jobs
-====================
+===================
 
 Role for deploy cron jobs.
 
-Ansible versions
---------------------
+Requirements
+---------------
 
-Role is adapted for Ansible 2.0, should work on 1.9.
-
+* Ansible 2.2;
 
 Example configuration
 -------------------------
 
 ```yaml
 ---
-cron_jobs_enable: 'true' # enable service
-cron_jobs_restart: 'false' # restart cron service. This is not nessesary if kernel have inotify support
+# Enable service.
+cron_jobs_enable: 'false'
+# Restart cron service. This is not nessesary if kernel have inotify support.
+cron_jobs_restart: 'false'
+# Install cron daemon package.
+cron_jobs_install_package: 'false'
 
 cron_jobs:
   bob_cron:

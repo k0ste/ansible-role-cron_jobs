@@ -1,2 +1,3 @@
 ---
 cron_jobs_service: 'crond'
+cron_jobs_package: 'cronie'
