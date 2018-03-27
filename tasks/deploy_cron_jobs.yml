@@ -1,19 +1,31 @@
 ---
 - name: cron_jobs | Deploy cron jobs
   cron:
+    backup: "{{ item.value.backup | default(omit) }}"
+    cron_file: "{{ item.value.file | default(omit) }}"
+    day: "{{ item.value.day | default(omit) }}"
+    disabled: "{{ item.value.disabled | default(omit) }}"
+    env: "{{ item.value.env | default(omit) }}"
+    hour: "{{ item.value.hour | default(omit) }}"
+    insertafter: "{{ item.value.insertafter | default(omit) }}"
+    insertbefore: "{{ item.value.insertbefore  | default(omit) }}"
+    job: "{{ item.value.job | default(omit) }}"
+    minute: "{{ item.value.minute | default(omit) }}"
+    month: "{{ item.value.month | default(omit) }}"
     name: "{{ item.key }}"
-    cron_file: "{{ item.value.file }}"
-    user: "{{ item.value.user }}"
-    minute: "{{ item.value.minute }}"
-    hour: "{{ item.value.hour }}"
-    day: "{{ item.value.day }}"
-    weekday: "{{ item.value.weekday }}"
-    month: "{{ item.value.month }}"
-    job: "{{ item.value.job }}"
-    state: "{{ item.value.state }}"
+    special_time: "{{ item.value.special_time | default(omit) }}"
+    state: "{{ item.value.state | default(omit) }}"
+    user: "{{ item.value.user | default(omit) }}"
+    weekday: "{{ item.value.weekday | default(omit) }}"
   with_dict: "{{ hostvars[inventory_hostname]['cron_jobs'] }}"
   loop_control:
     label: "{{ item.key }}"
   notify:
-  - 'Enable cron'
-  - 'Restart cron'
+  - "Restart cron"
+- name: cron_jobs | Enable cron
+  service:
+    name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
+    enabled: "yes"
+  when:
+  - "hostvars[inventory_hostname]['cron_jobs_enable'] is defined"
+  - "hostvars[inventory_hostname]['cron_jobs_enable'] == 'true'"
