@@ -17,7 +17,7 @@
     state: "{{ item.value.state | default(omit) }}"
     user: "{{ item.value.user | default(omit) }}"
     weekday: "{{ item.value.weekday | default(omit) }}"
-  with_dict: "{{ hostvars[inventory_hostname]['cron_jobs'] }}"
+  loop: "{{ hostvars[inventory_hostname]['cron_jobs'] | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
   notify:

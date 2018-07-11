@@ -4,7 +4,7 @@ Role for deploy cron jobs.
 
 ## Requirements
 
-* Ansible 2.4;
+* Ansible 2.5+;
 
 ## Example configuration
 
