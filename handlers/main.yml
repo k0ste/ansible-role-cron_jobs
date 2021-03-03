@@ -1,8 +1,14 @@
 ---
 - name: Restart cron
-  service:
+  ansible.builtin.service:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
     state: "restarted"
   when:
-  - "hostvars[inventory_hostname]['cron_jobs_restart'] is defined"
-  - "hostvars[inventory_hostname]['cron_jobs_restart'] == 'true'"
+    - "hostvars[inventory_hostname]['cron_jobs'] is defined"
+    - "hostvars[inventory_hostname]['cron_jobs'] != ''"
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_restart']) is defined"
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_restart']) == 'true'"
+  vars:
+    cron_jobs_restart: "[] | map(&restart || 'false', @) | [0]"

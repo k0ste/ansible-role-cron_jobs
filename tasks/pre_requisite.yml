@@ -1,4 +1,8 @@
 ---
-- name: cron_jobs | Add the OS specific variables
-  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] +
-                    '.yml' }}"
+- name: cron_jobs | Add the OS specific varibles
+  ansible.builtin.include_vars:
+    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
+- name: cron_jobs | Set facts about cron_jobs role
+  ansible.builtin.set_fact:
+    cron_jobs_settings: "{{ hostvars[inventory_hostname]['cron_jobs'] |
+      community.general.json_query('[].settings[] | [0]') }}"

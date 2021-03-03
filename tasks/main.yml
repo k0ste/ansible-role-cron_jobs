@@ -1,10 +1,16 @@
 ---
-- import_tasks: pre_requisite.yml
-- include_tasks: packages.yml
+- import_tasks: "pre_requisite.yml"
+- include_tasks: "packages.yml"
   when:
-  - "hostvars[inventory_hostname]['cron_jobs_install_package'] is defined"
-  - "hostvars[inventory_hostname]['cron_jobs_install_package'] == 'true'"
-- include_tasks: deploy_cron_jobs.yml
+    - "hostvars[inventory_hostname]['cron_jobs'] is defined"
+    - "hostvars[inventory_hostname]['cron_jobs'] != ''"
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_install_package']) is defined"
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_install_package']) == 'true'"
+  vars:
+    cron_jobs_install_package: "[] | map(&install_package || 'false', @) | [0]"
+- include_tasks: "deploy_cron_jobs.yml"
   when:
-  - "hostvars[inventory_hostname]['cron_jobs'] is defined"
-  - "hostvars[inventory_hostname]['cron_jobs'] != ''"
+    - "vars['cron_jobs_settings'] is defined"
+    - "vars['cron_jobs_settings'] != ''"

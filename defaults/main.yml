@@ -1,4 +1,2 @@
 ---
-cron_jobs_enable: 'false'
-cron_jobs_restart: 'false'
-cron_jobs_install_package: 'false'
+cron_jobs: []
