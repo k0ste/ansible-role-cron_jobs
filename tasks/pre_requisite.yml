@@ -12,13 +12,14 @@
   ansible.builtin.set_fact:
     cron_jobs_settings: "{{ hostvars[inventory_hostname]['cron_jobs'] |
       community.general.json_query('[].settings[] | [0]') }}"
-- name: "cron_jobs | Set facts about cron_jobs role"
+- name: "cron_jobs | Set facts about cron_jobs files"
   ansible.builtin.set_fact:
     cron_jobs_files: "{{ vars['cron_jobs_settings'].values() | list() |
       community.general.json_query('[].file') }}"
   when:
     - "vars['cron_jobs_settings'] is defined"
     - "vars['cron_jobs_settings'] != []"
+    - "vars['cron_jobs_settings'] != ''"
 - name: "cron_jobs | Find exists cron jobs"
   ansible.builtin.find:
     paths: "/etc/cron.d"
@@ -29,6 +30,7 @@
       hostvars[inventory_hostname]['cron_jobs_exclude_distro']) }}"
     use_regex: "true"
   when:
+    - "vars['cron_jobs_files'] is defined"
     - "hostvars[inventory_hostname]['cron_jobs'] |
        community.general.json_query(vars['cron_jobs_drop_exists']) is
        defined"
