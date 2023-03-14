@@ -1,3 +1,6 @@
 ---
 cron_jobs_service: 'crond'
 cron_jobs_package: 'cronie'
+cron_jobs_exclude_distro:
+  - '0hourly'
+  - 'raid-check'

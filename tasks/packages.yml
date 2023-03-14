@@ -1,30 +1,30 @@
 ---
-- name: cron_jobs | Install the required packages in Redhat derivatives
+- name: "cron_jobs | Install the required packages in Redhat derivatives"
   block:
-  - name: cron_jobs | Install the required packages for RedHat via yum
-    ansible.builtin.yum:
-      name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
-      state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"
-      update_cache: "yes"
-    when:
-      - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'yum'"
-  - name: cron_jobs | Install the required packages for RedHat via dnf
-    ansible.builtin.dnf:
-      name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
-      state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"
-      update_cache: "yes"
-    when:
-      - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'dnf'"
+    - name: cron_jobs | Install the required packages for RedHat via yum
+      ansible.builtin.yum:
+        name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
+        state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"
+        update_cache: "yes"
+      when:
+        - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'yum'"
+    - name: "cron_jobs | Install the required packages for RedHat via dnf"
+      ansible.builtin.dnf:
+        name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
+        state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"
+        update_cache: "yes"
+      when:
+        - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'dnf'"
   when:
     - "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat'"
-- name: cron_jobs | Install the required packages in Debian derivatives
+- name: "cron_jobs | Install the required packages in Debian derivatives"
   ansible.builtin.apt:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
     state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"
     update_cache: "yes"
   when:
     - "hostvars[inventory_hostname]['ansible_os_family'] == 'Debian'"
-- name: cron_jobs | Install the required packages in ArchLinux derivatives
+- name: "cron_jobs | Install the required packages in ArchLinux derivatives"
   community.general.pacman:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_package'] }}"
     state: "{{ vars['cron_jobs_package_state'] | default(omit) }}"

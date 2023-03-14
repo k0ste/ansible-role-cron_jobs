@@ -1,11 +1,11 @@
 ---
-- name: cron_jobs | Deploy cron jobs
+- name: "cron_jobs | Deploy cron jobs"
   ansible.builtin.cron:
     backup: "{{ item['value']['backup'] | default(omit) }}"
     cron_file: "{{ item['value']['file'] | default(omit) }}"
     day: "{{ item['value']['day'] | default(omit) }}"
     disabled: "{{ item['value']['disabled'] | default(omit) }}"
-    env: "{{ item['value']['env'] | default(omit) }}"
+    env: "no"
     hour: "{{ item['value']['hour'] | default(omit) }}"
     insertafter: "{{ item['value']['insertafter'] | default(omit) }}"
     insertbefore: "{{ item['value']['insertbefore '] | default(omit) }}"
@@ -19,10 +19,10 @@
     weekday: "{{ item['value']['weekday'] | default(omit) }}"
   loop: "{{ vars['cron_jobs_settings'] | dict2items() }}"
   loop_control:
-    label: "{{ item['key'] }}"
+    label: "{{ 'File: ' ~ item['value']['file'] ~ ' | job: ' ~ item['key'] }}"
   notify:
     - "Restart cron"
-- name: cron_jobs | Enable cron
+- name: "cron_jobs | Enable cron daemon"
   ansible.builtin.service:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
     enabled: "yes"

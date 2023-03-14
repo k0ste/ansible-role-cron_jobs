@@ -1,8 +1,50 @@
 ---
-- name: cron_jobs | Add the OS specific varibles
+- name: "cron_jobs | Assert that ansible facts gathered successfully"
+  ansible.builtin.assert:
+    that:
+      - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
+    msg: "'ansible_facts' not found. Please enable facts gathering"
+    quiet: "true"
+- name: "cron_jobs | Add the OS specific varibles"
   ansible.builtin.include_vars:
     file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
-- name: cron_jobs | Set facts about cron_jobs role
+- name: "cron_jobs | Set facts about cron_jobs role"
   ansible.builtin.set_fact:
     cron_jobs_settings: "{{ hostvars[inventory_hostname]['cron_jobs'] |
       community.general.json_query('[].settings[] | [0]') }}"
+- name: "cron_jobs | Set facts about cron_jobs role"
+  ansible.builtin.set_fact:
+    cron_jobs_files: "{{ vars['cron_jobs_settings'].values() | list() |
+      community.general.json_query('[].file') }}"
+  when:
+    - "vars['cron_jobs_settings'] is defined"
+    - "vars['cron_jobs_settings'] != []"
+- name: "cron_jobs | Find exists cron jobs"
+  ansible.builtin.find:
+    paths: "/etc/cron.d"
+    recurse: "no"
+    file_type: "file"
+    patterns: "(.*)"
+    excludes: "{{ (cron_jobs_exclude_jobs +
+      hostvars[inventory_hostname]['cron_jobs_exclude_distro']) }}"
+    use_regex: "true"
+  when:
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_drop_exists']) is
+       defined"
+    - "hostvars[inventory_hostname]['cron_jobs'] |
+       community.general.json_query(vars['cron_jobs_drop_exists']) ==
+       'true'"
+  vars:
+    cron_jobs_drop_exists: "[] | map(&drop_exists || 'false', @) | [0]"
+    cron_jobs_exclude_jobs: "{{ vars['cron_jobs_files'] | list() }}"
+  register: "cron_jobs_find_result"
+- name: "cron_jobs | Delete exists cron jobs"
+  ansible.builtin.file:
+    path: "{{ item['path'] }}"
+    state: "absent"
+  loop: "{{ vars['cron_jobs_find_result']['files'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'Remove ' + item['path'] }}"
+  when:
+    - "vars['cron_jobs_find_result']['files'] is defined"

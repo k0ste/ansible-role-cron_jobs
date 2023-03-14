@@ -1,10 +1,10 @@
 # cron_jobs
 
-Role for deploy cron jobs.
+Role for deploy cron jobs
 
 ## Requirements
 
-* Ansible 3.0.0+;
+* Ansible 3.0.0+
 
 ## Example configuration
 
@@ -12,11 +12,13 @@ Role for deploy cron jobs.
 ---
 cron_jobs:
 # Enable crond service or not
-- enable: 'false'
+- enable: 'true'
 # Restart cron service. This is not necessary if kernel have inotify support
-  restart: 'false'
+  restart: 'true'
 # Install cron daemon package or not
-  install_package: 'false'
+  install_package: 'true'
+# Drop exists jobs (exclude distro-specific files) or not
+  drop_exists: 'true'
   settings:
 # Set env for bob jobs
     MAILTO:
