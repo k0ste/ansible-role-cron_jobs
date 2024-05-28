@@ -3,7 +3,7 @@
   ansible.builtin.assert:
     that:
       - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
-    msg: "'ansible_facts' not found. Please enable facts gathering"
+    fail_msg: "'ansible_facts' not found. Please enable facts gathering"
     quiet: "true"
 - name: "cron_jobs | Add the OS specific varibles"
   ansible.builtin.include_vars:
@@ -11,15 +11,17 @@
 - name: "cron_jobs | Set facts about cron_jobs role"
   ansible.builtin.set_fact:
     cron_jobs_settings: "{{ hostvars[inventory_hostname]['cron_jobs'] |
-      community.general.json_query('[].settings[] | [0]') }}"
+      community.general.json_query('[].settings[]') }}"
+    cron_jobs_jobs: "{{ hostvars[inventory_hostname]['cron_jobs'] |
+      community.general.json_query('[].jobs[] | [0]') }}"
 - name: "cron_jobs | Set facts about cron_jobs files"
   ansible.builtin.set_fact:
-    cron_jobs_files: "{{ vars['cron_jobs_settings'].values() | list() |
+    cron_jobs_files: "{{ vars['cron_jobs_jobs'].values() | list() |
       community.general.json_query('[].file') }}"
   when:
-    - "vars['cron_jobs_settings'] is defined"
-    - "vars['cron_jobs_settings'] != []"
-    - "vars['cron_jobs_settings'] != ''"
+    - "vars['cron_jobs_jobs'] is defined"
+    - "vars['cron_jobs_jobs'] != []"
+    - "vars['cron_jobs_jobs'] != ''"
 - name: "cron_jobs | Find exists cron jobs"
   ansible.builtin.find:
     paths: "/etc/cron.d"
@@ -50,3 +52,14 @@
     label: "{{ 'Remove ' + item['path'] }}"
   when:
     - "vars['cron_jobs_find_result']['files'] is defined"
+- name: "cron_jobs | Create catalogs for cron daemon configuration"
+  ansible.builtin.file:
+    path: "/etc/sysconfig"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when:
+    - "vars['cron_jobs_settings'] is defined"
+    - "vars['cron_jobs_settings'] != ''"
+    - "vars['cron_jobs_settings'] != []"

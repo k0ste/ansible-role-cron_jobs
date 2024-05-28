@@ -1,5 +1,5 @@
 ---
-- name: Restart cron
+- name: "Restart cron"
   ansible.builtin.service:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
     state: "restarted"
@@ -12,3 +12,7 @@
        community.general.json_query(vars['cron_jobs_restart']) == 'true'"
   vars:
     cron_jobs_restart: "[] | map(&restart || 'false', @) | [0]"
+- name: "Restart crond"
+  ansible.builtin.service:
+    name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
+    state: "restarted"

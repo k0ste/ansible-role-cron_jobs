@@ -1,0 +1,27 @@
+{{ '## crond' }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
+
+{% for c in vars['cron_jobs_settings'] %}
+{% if loop['first'] %}
+{{ 'CRONDARGS=\"' -}}
+{% endif %}
+{% if c['inotify'] is defined and c['inotify'] == 'false' %}
+{{ ' -c' -}}
+{% endif %}
+{% if c['mail'] is defined and c['mail'] != '' %}
+{{ ' -m ' + c['mail'] -}}
+{% endif %}
+{% if c['path'] is defined and c['path'] == 'false' %}
+{{ ' -P' -}}
+{% endif %}
+{% if c['clustering'] is defined and c['clustering'] == 'true' %}
+{{ ' -c' -}}
+{% endif %}
+{% if c['system_log'] is defined and c['system_log'] == 'true' %}
+{{ ' -s' -}}
+{% endif %}
+{% if loop['last'] %}
+{{- '\"' }}
+{% endif %}
+{% endfor %}

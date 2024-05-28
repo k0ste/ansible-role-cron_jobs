@@ -1,7 +1,9 @@
 ---
-- ansible.builtin.import_tasks:
+- name: "cron_jobs | Include pre requisite tasks"
+  ansible.builtin.import_tasks:
     file: "pre_requisite.yml"
-- ansible.builtin.include_tasks:
+- name: "cron_jobs | Include packages tasks"
+  ansible.builtin.include_tasks:
     file: "packages.yml"
   when:
     - "hostvars[inventory_hostname]['cron_jobs'] is defined"
@@ -14,8 +16,6 @@
        'true'"
   vars:
     cron_jobs_install_package: "[] | map(&install_package || 'false', @) | [0]"
-- ansible.builtin.include_tasks:
+- name: "cron_jobs | Include deployment tasks"
+  ansible.builtin.include_tasks:
     file: "deploy.yml"
-  when:
-    - "vars['cron_jobs_settings'] is defined"
-    - "vars['cron_jobs_settings'] != ''"
