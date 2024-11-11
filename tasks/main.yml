@@ -17,5 +17,12 @@
   vars:
     cron_jobs_install_package: "[] | map(&install_package || 'false', @) | [0]"
 - name: "cron_jobs | Include deployment tasks"
-  ansible.builtin.include_tasks:
+  ansible.builtin.import_tasks:
     file: "deploy.yml"
+- name: "cron_jobs | Include jobs tasks"
+  ansible.builtin.include_tasks:
+    file: "deploy_jobs.yml"
+  when:
+    - "vars['cron_jobs_jobs'] is defined"
+    - "vars['cron_jobs_jobs'] != ''"
+    - "vars['cron_jobs_jobs'] != []"

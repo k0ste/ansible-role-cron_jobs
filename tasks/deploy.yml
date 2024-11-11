@@ -15,34 +15,6 @@
       'Archlinux']"
   notify:
     - "Restart crond"
-- name: "cron_jobs | Deploy cron jobs"
-  ansible.builtin.cron:
-    backup: "{{ job['value']['backup'] | default(omit) }}"
-    cron_file: "{{ job['value']['file'] | default(omit) }}"
-    day: "{{ job['value']['day'] | default(omit) }}"
-    disabled: "{{ job['value']['disabled'] | default(omit) }}"
-    env: "no"
-    hour: "{{ job['value']['hour'] | default(omit) }}"
-    insertafter: "{{ job['value']['insertafter'] | default(omit) }}"
-    insertbefore: "{{ job['value']['insertbefore '] | default(omit) }}"
-    job: "{{ job['value']['job'] | default(omit) }}"
-    minute: "{{ job['value']['minute'] | default(omit) }}"
-    month: "{{ job['value']['month'] | default(omit) }}"
-    name: "{{ job['key'] }}"
-    special_time: "{{ job['value']['special_time'] | default(omit) }}"
-    state: "{{ job['value']['state'] | default(omit) }}"
-    user: "{{ job['value']['user'] | default(omit) }}"
-    weekday: "{{ job['value']['weekday'] | default(omit) }}"
-  loop: "{{ vars['cron_jobs_jobs'] | dict2items() }}"
-  loop_control:
-    loop_var: "job"
-    label: "{{ 'File: ' ~ job['value']['file'] ~ ' | job: ' ~ job['key'] }}"
-  notify:
-    - "Restart cron"
-  when:
-    - "vars['cron_jobs_jobs'] is defined"
-    - "vars['cron_jobs_jobs'] != ''"
-    - "vars['cron_jobs_jobs'] != []"
 - name: "cron_jobs | Enable cron daemon"
   ansible.builtin.service:
     name: "{{ hostvars[inventory_hostname]['cron_jobs_service'] }}"
